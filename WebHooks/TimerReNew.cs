@@ -17,7 +17,7 @@ namespace WebHooks
             BusinessCentralService bcService = new BusinessCentralService();
             await bcService.InitializeAsync();
             log.LogInformation($"bcService initialized.");
-            var bcResponse = await bcService.GetBusinessCentralAPI("/api/v1.0/subscriptions");
+            var bcResponse = await bcService.GetBusinessCentralAPI("/api/v2.0/subscriptions");
             log.LogInformation($"bcResponse: {bcResponse}");
             var responseObj = JsonConvert.DeserializeObject<SubscriptionResponse>(bcResponse);
             if (responseObj?.Value != null && responseObj.Value.Any())
