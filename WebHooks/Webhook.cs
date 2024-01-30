@@ -5,7 +5,9 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace WebHooks
@@ -25,18 +27,45 @@ namespace WebHooks
             }
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
+            var data = JsonConvert.DeserializeObject<NotificationPayload>(requestBody);
 
             log.LogInformation("New notification:");
             log.LogInformation(requestBody);
 
-            BusinessCentralService bcService = new BusinessCentralService();
-            await bcService.InitializeAsync();
-            log.LogInformation($"bcService initialized.");
-            var bcResponse = await bcService.ProccesNotificationBusinessCentralAPI(data.resource.value.ToString());
-            log.LogInformation($"bcResponse: {bcResponse}");
+            if (data?.Value != null && data.Value.Any())
+            {
+                BusinessCentralService bcService = new BusinessCentralService();
+                await bcService.InitializeAsync();
+                log.LogInformation($"bcService initialized.");
+
+                foreach (var item in data.Value)
+                {
+                    var bcResponse = await bcService.ProccesNotificationBusinessCentralAPI(item.Resource);
+                    log.LogInformation($"Processed resource: {item.Resource}");
+                    log.LogInformation($"bcResponse: {bcResponse}");
+                }
+            }
+            else
+            {
+                log.LogInformation("No notification data found.");
+            }
 
             return new AcceptedResult();
         }
+    }
+
+    public class NotificationPayload
+    {
+        public List<SubscriptionInfo> Value { get; set; }
+    }
+
+    public class SubscriptionInfo
+    {
+        public string SubscriptionId { get; set; }
+        public string ClientState { get; set; }
+        public string ExpirationDateTime { get; set; }
+        public string Resource { get; set; }
+        public string ChangeType { get; set; }
+        public string LastModifiedDateTime { get; set; }
     }
 }

@@ -125,10 +125,7 @@ namespace WebHooks
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-
-                string url = input;
-
-                HttpResponseMessage response = await client.GetAsync(url);
+                HttpResponseMessage response = await client.GetAsync(input);
 
                 string responseContent = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
