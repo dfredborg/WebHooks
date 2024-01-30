@@ -22,7 +22,7 @@ namespace WebHooks
             var responseObj = JsonConvert.DeserializeObject<SubscriptionResponse>(bcResponse);
             if (responseObj?.Value != null && responseObj.Value.Any())
             {
-                var matchingSubscription = responseObj.Value.FirstOrDefault(sub => sub.NotificationUrl == "https://webhooks20230425143351.azurewebsites.net/api/MyItemNotification?code=xxxx");
+                var matchingSubscription = responseObj.Value.FirstOrDefault(sub => sub.NotificationUrl == "https://webhooks20240130090304.azurewebsites.net/api/MyItemNotification?code=d7cNVe4SO96OJ41HteXwb6vexEROiBDJsj2tXCkVc9ioAzFuNVc_Nw==");
                 if (matchingSubscription != null)
                 {
                     await bcService.PatchBusinessCentralAPI(matchingSubscription.SubscriptionId);
